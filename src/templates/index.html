@@ -1,0 +1,279 @@
+<!DOCTYPE html>  <!-- Declares the document type as HTML5 -->
+<html lang="en">  <!-- Root HTML element with English language setting -->
+<head>  <!-- Document head containing metadata and styles -->
+    <meta charset="UTF-8">  <!-- Character encoding declaration -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!-- Responsive viewport settings -->
+    <title>Greeting App</title>  <!-- Page title shown in browser tab -->
+    <style>
+        /* Main body styling */
+        body {
+            font-family: Arial, sans-serif;  /* Set default font */
+            max-width: 1000px;  /* Maximum width of content */
+            margin: 0 auto;  /* Center content horizontally */
+            padding: 20px;  /* Add padding around content */
+            background-color: #f5f5f5;  /* Light gray background */
+        }
+        /* Container div styling */
+        .container {
+            background-color: white;  /* White background */
+            padding: 20px;  /* Inner spacing */
+            border-radius: 8px;  /* Rounded corners */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);  /* Subtle shadow effect */
+        }
+        /* Heading styling */
+        h1 {
+            color: #333;  /* Dark gray text color */
+            text-align: center;  /* Center align text */
+        }
+        /* Form styling */
+        form {
+            display: flex;  /* Use flexbox layout */
+            flex-direction: column;  /* Stack form elements vertically */
+            gap: 15px;  /* Space between form elements */
+            max-width: 500px;  /* Maximum form width */
+            margin: 20px auto;  /* Center the form */
+        }
+        /* Form group styling */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        /* Label styling */
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        /* Input styling */
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            padding: 8px;  /* Inner spacing */
+            border: 1px solid #ddd;  /* Light gray border */
+            border-radius: 4px;  /* Rounded corners */
+            font-size: 16px;  /* Text size */
+        }
+        /* Button styling */
+        button {
+            padding: 10px;  /* Inner spacing */
+            background-color: #007bff;  /* Blue background */
+            color: white;  /* White text */
+            border: none;  /* Remove default border */
+            border-radius: 4px;  /* Rounded corners */
+            cursor: pointer;  /* Hand cursor on hover */
+            font-size: 16px;  /* Text size */
+            margin-top: 10px;  /* Space above button */
+        }
+        /* Button hover effect */
+        button:hover {
+            background-color: #0056b3;  /* Darker blue on hover */
+        }
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+        .edit-btn {
+            background-color: #28a745;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .flash-messages {
+            margin: 20px auto;
+            max-width: 500px;
+        }
+        .flash-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .flash-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .edit-mode {
+            padding: 4px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .save-btn {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>  
+    <div class="container">  
+        <h1>User Management System</h1>  
+
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" placeholder="Enter first name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="last_name" placeholder="Enter last name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" placeholder="Enter email address" required>
+            </div>
+            
+            <button type="submit">Add User</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email Address</th>
+                    <th>Action</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr id="row-{{ user.username }}">
+                    <td>{{ user.username }}</td>
+                    <td>
+                        <span class="view-mode">{{ user.password }}</span>
+                        <input type="password" class="edit-mode" name="password" value="{{ user.password }}" style="display: none;" required>
+                    </td>
+                    <td>
+                        <span class="view-mode">{{ user.first_name }}</span>
+                        <input type="text" class="edit-mode" name="first_name" value="{{ user.first_name }}" style="display: none;" required>
+                    </td>
+                    <td>
+                        <span class="view-mode">{{ user.last_name }}</span>
+                        <input type="text" class="edit-mode" name="last_name" value="{{ user.last_name }}" style="display: none;" required>
+                    </td>
+                    <td>
+                        <span class="view-mode">{{ user.email }}</span>
+                        <input type="email" class="edit-mode" name="email" value="{{ user.email }}" style="display: none;" required>
+                    </td>
+                    <td>
+                        <form id="edit-form-{{ user.username }}" action="{{ url_for('edit_user', username=user.username) }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="username" value="{{ user.username }}">
+                            <button type="button" class="action-btn edit-btn" onclick="toggleEdit('{{ user.username }}')">Edit</button>
+                            <button type="submit" class="action-btn save-btn" style="display: none;">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{{ url_for('delete_user', username=user.username) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="action-btn delete-btn">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleEdit(username) {
+            const row = document.getElementById(`row-${username}`);
+            const editBtn = row.querySelector('.edit-btn');
+            const saveBtn = row.querySelector('.save-btn');
+            const viewSpans = row.querySelectorAll('.view-mode');
+            const editInputs = row.querySelectorAll('.edit-mode');
+            const form = document.getElementById(`edit-form-${username}`);
+            
+            // Switch to edit mode
+            viewSpans.forEach(span => span.style.display = 'none');
+            editInputs.forEach(input => input.style.display = 'block');
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'inline-block';
+            
+            // Add event listener to save button
+            saveBtn.onclick = function(e) {
+                e.preventDefault();
+                
+                // Get all input values
+                const formData = new FormData();
+                formData.append('password', row.querySelector('input[type="password"]').value);
+                formData.append('first_name', row.querySelector('input[type="text"]').value);
+                formData.append('last_name', row.querySelectorAll('input[type="text"]')[1].value);
+                formData.append('email', row.querySelector('input[type="email"]').value);
+                
+                // Log the data being sent
+                console.log('Sending data:', {
+                    password: formData.get('password'),
+                    first_name: formData.get('first_name'),
+                    last_name: formData.get('last_name'),
+                    email: formData.get('email')
+                });
+                
+                // Submit form data
+                fetch(`/edit/${username}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            };
+        }
+    </script>
+</body>
+</html>  <!-- End of HTML document --> 
